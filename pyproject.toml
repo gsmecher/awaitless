@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rfmux"
+version = "1.0"
+description = "Teach async and interactive ipython sessions how to get along"
+authors = [
+  {name="Graeme Smecher", email="gsmecher@t0.technology"},
+]
+dependencies = [
+  "aiohttp",
+  "ipython",
+  "pytest",
+  "doctest",
+]
+
+[project.urls]
+homepage = "https://github.com/gsmecher/awaitless"
+repository = "https://github.com/gsmecher/awaitless"
+
+[tool.setuptools]
+packages = ["awaitless"]
