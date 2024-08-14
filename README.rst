@@ -1,5 +1,5 @@
 Awaitless
----------
+=========
 
 If you're writing network-oriented code in Python, you're probably looking at
 an asynchronous framework of some kind. Let's say you're also writing code
@@ -13,6 +13,8 @@ For example, let's pretend "tremendously_async_function" is a complicated piece
 of async machinery.  It takes arguments, interacts with the world, and returns
 a value.  Here's a placeholder function:
 
+.. code-block:: ipython
+
     >>> async def tremendously_async_function(x):
     ...     import aiohttp
     ...     async with aiohttp.ClientSession() as cs:
@@ -21,11 +23,15 @@ a value.  Here's a placeholder function:
 Let's say you're calling tremendously_async_function() in an interactive
 ipython session:
 
+.. code-block:: ipython
+
     >>> tremendously_async_function(3600)  # doctest: +SKIP
     Out[1]: <coroutine object tremendously_async_function ...>
 
 oops! You get a "RuntimeWarning: coroutine was never awaited" slap on the
 wrist and the function never actually runs. You forgot the "await":
+
+.. code-block:: ipython
 
     >>> await tremendously_async_function(1)
     Out[1]: ...<ClientResponse(https://news.ycombinator.com/) [200 OK]>...
@@ -37,6 +43,8 @@ user wanted to run some code, and forcing them to slavishly type "await" every
 time is so pedantic it's user-hostile.
 
 Let's do better:
+
+.. code-block:: ipython
 
     >>> %load_ext awaitless
     >>> tremendously_async_function(1)
@@ -55,21 +63,22 @@ Why?
 Yes, "await" is only 6 extra keys to hit, but it's distracting and unnecessary.
 You could have the same discussion about print()ing the results in a REPL
 rather than just displaying them -- and ipython cares enough about this to make
-it configurable.  (Try `get_ipython().ast_node_interactivity='all'` if you're
-curious.)
+it configurable.  (Try :code:`get_ipython().ast_node_interactivity='all'` if
+you're curious.)
 
-I find myself returning to this article every year or so:
+I find myself returning to `this article
+<https://yosefk.com/blog/i-cant-believe-im-praising-tcl.html>`_ every year or
+so:
 
-        https://yosefk.com/blog/i-cant-believe-im-praising-tcl.html
 
 The author says:
 
-> I ain't gonna mock Tcl-scriptable tools no more. I understand what made the
-> authors choose Tcl, and no, it's not just a bad habit. On a level, they chose
-> probably the best thing available today in terms of
-> ease-of-programming/ease-of-use trade-off (assuming they bundle an interactive
-> command shell). If I need to automate something related to those tools, I'll
-> delve into it more happily than previously.
+    I ain't gonna mock Tcl-scriptable tools no more. I understand what made the
+    authors choose Tcl, and no, it's not just a bad habit. On a level, they
+    chose probably the best thing available today in terms of
+    ease-of-programming/ease-of-use trade-off (assuming they bundle an
+    interactive command shell). If I need to automate something related to
+    those tools, I'll delve into it more happily than previously.
 
 In short: languages designed for interactive use (tcl, bash, etc) make syntax
 decisions that are different than languages that are designed for programming.
@@ -78,14 +87,20 @@ invocation at the expense of language composition (functions, classes,
 modules). IPython is a reasonable compromise - but not when coroutines are
 involved.
 
-## Testing
+Testing
+-------
 
 Run the following:
 
+.. code-block:: bash
+
     awaitless$ pytest README.rst test.py
 
-## Installation
+Installation
+------------
 
 For now, you need to put awaitless.py somewhere handy. Then, in ipython,
+
+.. code-block:: ipython
 
     >>> %load_ext awaitless                     # doctest: +SKIP
