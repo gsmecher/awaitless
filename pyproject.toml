@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "rfmux"
+name = "awaitless"
 description = "Teach async and interactive ipython sessions how to get along"
 authors = [
   {name="Graeme Smecher", email="gsmecher@t0.technology"},
