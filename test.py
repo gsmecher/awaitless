@@ -9,9 +9,7 @@ def doctest_coroutine_with_normal_yield():
     This code path is utterly vanilla and we just want to make sure we didn't
     wreck it.
 
-    >>> import awaitless, IPython
-    >>> shell = IPython.InteractiveShell.instance()
-    >>> awaitless.load_ipython_extension(shell)
+    >>> %reload_ext awaitless
     >>> async def hello(): return "Hello world"
     >>> await hello()
     Out[1]: 'Hello world'
@@ -20,9 +18,7 @@ def doctest_coroutine_with_normal_yield():
 
 def doctest_coroutine_to_task_expr():
     """
-    >>> import awaitless, IPython
-    >>> shell = IPython.InteractiveShell.instance()
-    >>> awaitless.load_ipython_extension(shell)
+    >>> %reload_ext awaitless
     >>> async def hello(): return "Hello world"
     >>> hello()
     Out[1]: <Task finished ... result='Hello world'>
@@ -31,9 +27,7 @@ def doctest_coroutine_to_task_expr():
 
 def doctest_coroutine_to_task_assignment():
     """
-    >>> import awaitless, IPython
-    >>> shell = IPython.InteractiveShell.instance()
-    >>> awaitless.load_ipython_extension(shell)
+    >>> %reload_ext awaitless
     >>> async def hello(): return "Hello world"
     >>> x = hello()
     >>> x
@@ -43,9 +37,7 @@ def doctest_coroutine_to_task_assignment():
 
 def doctest_coroutine_multiply_awaited():
     """
-    >>> import awaitless, IPython
-    >>> shell = IPython.InteractiveShell.instance()
-    >>> awaitless.load_ipython_extension(shell)
+    >>> %reload_ext awaitless
     >>> async def hello(): return "Hello world"
     >>> x = hello()
     >>> await x

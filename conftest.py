@@ -7,7 +7,6 @@
 import pytest
 import IPython
 import doctest
-import awaitless
 import functools
 import operator
 
