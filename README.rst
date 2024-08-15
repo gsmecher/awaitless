@@ -5,6 +5,10 @@ If you're writing network-oriented code in Python, you're probably looking at
 an asynchronous framework of some kind. Let's say you're also writing code
 that's intended to be used interactively in ipython.
 
+(Why would you ever use async interactively in ipython? There's a longer
+screed associated with an earlier attempt `here
+<https://github.com/gsmecher/tworoutine>`_.)
+
 That's a drag, because async is irrelevant for interactive use -- except you
 need to sprinkle "await" and "async" keywords in exactly the right places or it
 doesn't work.
