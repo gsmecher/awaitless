@@ -72,10 +72,7 @@ you're curious.)
 
 I find myself returning to `this article
 <https://yosefk.com/blog/i-cant-believe-im-praising-tcl.html>`_ every year or
-so:
-
-
-The author says:
+so. The author says:
 
     I ain't gonna mock Tcl-scriptable tools no more. I understand what made the
     authors choose Tcl, and no, it's not just a bad habit. On a level, they
