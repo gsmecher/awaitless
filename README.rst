@@ -95,7 +95,7 @@ Run the following:
 
 .. code-block:: bash
 
-    awaitless$ pytest README.rst test.py
+    awaitless$ pytest
 
 Installation
 ------------
