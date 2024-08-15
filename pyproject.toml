@@ -11,9 +11,8 @@ authors = [
 ]
 dependencies = [
   "aiohttp",
-  "ipython",
+  "IPython",
   "pytest",
-  "doctest",
 ]
 
 [project.urls]

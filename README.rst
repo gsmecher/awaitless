@@ -99,12 +99,3 @@ Run the following:
 .. code-block:: bash
 
     awaitless$ pytest
-
-Installation
-------------
-
-For now, you need to put awaitless.py somewhere handy. Then, in ipython,
-
-.. code-block:: ipython
-
-    >>> %load_ext awaitless                     # doctest: +SKIP
