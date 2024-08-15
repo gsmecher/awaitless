@@ -13,35 +13,38 @@ That's a drag, because async is irrelevant for interactive use -- except you
 need to sprinkle "await" and "async" keywords in exactly the right places or it
 doesn't work.
 
-For example, let's pretend "tremendously_async_function" is a complicated piece
-of async machinery.  It takes arguments, interacts with the world, and returns
-a value.  Here's a placeholder function:
+For example, let's pretend "release_kraken" is a complicated piece of async
+machinery.  It might take arguments, interacts with the world, and might return
+a value. Here's a placeholder definition:
 
 .. code-block:: ipython
 
-    >>> async def tremendously_async_function(url):
-    ...     import aiohttp
+    >>> async def release_kraken():
+    ...     import aiohttp, http
     ...     async with aiohttp.ClientSession() as cs:
-    ...         return await cs.get(url)
+    ...         resp = await cs.post('http://httpbin.org/post')
+    ...         return resp.status == http.HTTPStatus.OK
 
-Let's say you're calling tremendously_async_function() in an interactive
-ipython session:
-
-.. code-block:: ipython
-
-    >>> tremendously_async_function('http://example.com') # doctest: +SKIP
-    Out[1]: <coroutine object tremendously_async_function ...>
-
-oops! You get a "RuntimeWarning: coroutine was never awaited" slap on the
-wrist and the function never actually runs. You forgot the "await":
+Let's say you're calling :code:`release_kraken()` in an interactive ipython
+session:
 
 .. code-block:: ipython
 
-    >>> await tremendously_async_function('http://example.com')
-    Out[1]: ...<ClientResponse(http://example.com) [200 OK]>...
+    >>> release_kraken() # doctest: +SKIP
+    Out[1]: <coroutine object release_kraken ...>
+
+The kraken is not released - your function never actually executes. All you get
+is a "RuntimeWarning: coroutine was never awaited" slap on the wrist.  You
+forgot the "await":
+
+
+.. code-block:: ipython
+
+    >>> await release_kraken()
+    Out[1]: True
 
 That's ... better? I mean, it's now "correct" according to asyncio conventions,
-and we're making use of ipython's "autoawait" magic, but there is *never* any
+and we're making use of ipython's autoawait magic, but there is *never* any
 ambiguity about a coroutine at the top level of an interactive session. The
 user wanted to run some code, and forcing them to slavishly type "await" every
 time is so pedantic it's user-hostile.
@@ -51,8 +54,8 @@ Let's do better:
 .. code-block:: ipython
 
     >>> %load_ext awaitless
-    >>> tremendously_async_function('http://example.com')
-    Out[1]: ...<Task finished ... result=...>
+    >>> release_kraken()
+    Out[1]: ...<Task finished ... result=True>
 
 What did that do?
 
@@ -60,7 +63,7 @@ What did that do?
   'finished' and 'result')
 
 * The return value is now a Task, not a coroutine(). However, both coroutines
-  and Tasks are awaitable, so the switcheroo is (largely) compatible.
+  and Tasks are awaitable, so the switcheroo is (largely) API compatible.
 
 Why?
 
