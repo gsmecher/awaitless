@@ -10,7 +10,7 @@ import IPython
 
 # Convert coroutines in assignments into tasks
 class CoroutineTransformer(ast.NodeTransformer):
-    inhibit = False
+    inner_context = False
 
     def visit_Module(self, node):
         # import inspect, asyncio
@@ -26,13 +26,21 @@ class CoroutineTransformer(ast.NodeTransformer):
         self.generic_visit(node)
         return node
 
-    def visit_FunctionDef(self, node):
-        self.inhibit = True
-        return self.generic_visit(node)
-        self.inhibit = False
+    def _trigger_inner_context(self, node):
+        old_inner_context = self.inner_context
+        self.inner_context = True
+        node = self.generic_visit(node)
+        self.inner_context = old_inner_context
+        return node
 
+    # The following AST nodes trigger a shift to an "inner context", where AST
+    # rewriting is disabled.
+    visit_FunctionDef = _trigger_inner_context
+    visit_AsyncFunctionDef = _trigger_inner_context
+
+    # The following AST nodes are rewritten.
     def visit_Expr(self, node):
-        if self.inhibit:
+        if self.inner_context:
             return self.generic_visit(node)
 
         t = ast.parse(
@@ -52,7 +60,7 @@ class CoroutineTransformer(ast.NodeTransformer):
         return t.body
 
     def visit_Assign(self, node):
-        if self.inhibit:
+        if self.inner_context:
             return self.generic_visit(node)
 
         t = ast.parse(

@@ -60,3 +60,23 @@ def doctest_coroutine_inside_sync_function():
     >>> with warnings.catch_warnings(action="ignore"):  # hello() never awaited
     ...     hello_wrapper()
     """
+
+
+def doctest_coroutine_inside_async_function():
+    """
+    >>> %reload_ext awaitless
+    >>> async def hello(): return "Hello world"
+
+    For async code, we have the _ability_ to modify the AST and substitute
+    coroutines for tasks, but we shouldn't. Doing so would make code execute
+    differently in ipython cells compared to library code, and we'd like to be
+    able to cut and paste back and forth.
+
+    >>> import types
+    >>> async def hello_wrapper():
+    ...    x = hello()
+    ...    assert isinstance(x, types.CoroutineType), f"x was a {type(x)}, not a coroutine!"
+    ...    return await x
+    >>> await hello_wrapper()
+    Out[1]: 'Hello world'
+    """
