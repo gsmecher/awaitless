@@ -57,7 +57,8 @@ def doctest_coroutine_inside_sync_function():
     statement inside a synchronous function - which isn't allowed.
 
     >>> import warnings
-    >>> with warnings.catch_warnings(action="ignore"):  # hello() never awaited
+    >>> with warnings.catch_warnings():
+    ...     warnings.simplefilter("ignore")  # hello() never awaited
     ...     hello_wrapper()
     """
 
