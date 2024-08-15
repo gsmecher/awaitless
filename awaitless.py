@@ -10,6 +10,8 @@ import IPython
 
 # Convert coroutines in assignments into tasks
 class CoroutineTransformer(ast.NodeTransformer):
+    inhibit = False
+
     def visit_Module(self, node):
         # import inspect, asyncio
         node.body.insert(
@@ -24,7 +26,15 @@ class CoroutineTransformer(ast.NodeTransformer):
         self.generic_visit(node)
         return node
 
+    def visit_FunctionDef(self, node):
+        self.inhibit = True
+        return self.generic_visit(node)
+        self.inhibit = False
+
     def visit_Expr(self, node):
+        if self.inhibit:
+            return self.generic_visit(node)
+
         t = ast.parse(
             textwrap.dedent(
                 """
@@ -42,6 +52,9 @@ class CoroutineTransformer(ast.NodeTransformer):
         return t.body
 
     def visit_Assign(self, node):
+        if self.inhibit:
+            return self.generic_visit(node)
+
         t = ast.parse(
             textwrap.dedent(
                 """

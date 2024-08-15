@@ -45,3 +45,18 @@ def doctest_coroutine_multiply_awaited():
     >>> x
     Out[1]: <Task finished ... result='Hello world'>
     """
+
+
+def doctest_coroutine_inside_sync_function():
+    """
+    >>> %reload_ext awaitless
+    >>> async def hello(): return "Hello world"
+    >>> def hello_wrapper(): hello()
+
+    If awaitless operates inside hello_wrapper(), it'll be adding an "await"
+    statement inside a synchronous function - which isn't allowed.
+
+    >>> import warnings
+    >>> with warnings.catch_warnings(action="ignore"):  # hello() never awaited
+    ...     hello_wrapper()
+    """
