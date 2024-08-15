@@ -19,17 +19,17 @@ a value.  Here's a placeholder function:
 
 .. code-block:: ipython
 
-    >>> async def tremendously_async_function(x):
+    >>> async def tremendously_async_function(url):
     ...     import aiohttp
     ...     async with aiohttp.ClientSession() as cs:
-    ...         return await cs.get('https://news.ycombinator.com/')
+    ...         return await cs.get(url)
 
 Let's say you're calling tremendously_async_function() in an interactive
 ipython session:
 
 .. code-block:: ipython
 
-    >>> tremendously_async_function(3600)  # doctest: +SKIP
+    >>> tremendously_async_function('http://example.com') # doctest: +SKIP
     Out[1]: <coroutine object tremendously_async_function ...>
 
 oops! You get a "RuntimeWarning: coroutine was never awaited" slap on the
@@ -37,8 +37,8 @@ wrist and the function never actually runs. You forgot the "await":
 
 .. code-block:: ipython
 
-    >>> await tremendously_async_function(1)
-    Out[1]: ...<ClientResponse(https://news.ycombinator.com/) [200 OK]>...
+    >>> await tremendously_async_function('http://example.com')
+    Out[1]: ...<ClientResponse(http://example.com) [200 OK]>...
 
 That's ... better? I mean, it's now "correct" according to asyncio conventions,
 and we're making use of ipython's "autoawait" magic, but there is *never* any
@@ -51,7 +51,7 @@ Let's do better:
 .. code-block:: ipython
 
     >>> %load_ext awaitless
-    >>> tremendously_async_function(1)
+    >>> tremendously_async_function('http://example.com')
     Out[1]: ...<Task finished ... result=...>
 
 What did that do?
