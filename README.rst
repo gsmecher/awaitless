@@ -3,10 +3,10 @@ Awaitless
 
 If you're writing network-oriented code in Python, you're probably looking at
 an asynchronous framework of some kind. Let's say you're also writing code
-that's intended to be used interactively in ipython.
+that's intended to be used interactively in IPython or Jupyter notebooks.
 
-(Why would you ever use async interactively in ipython? There's a longer
-screed associated with an earlier attempt `here
+(Why would you ever use async interactively in IPython/JupyterLab? There's a
+longer screed associated with an earlier attempt `here
 <https://github.com/gsmecher/tworoutine>`_.)
 
 That's a drag, because async is irrelevant for interactive use -- except you
