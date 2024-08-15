@@ -8,6 +8,7 @@ description = "Teach async and interactive ipython sessions how to get along"
 authors = [
   {name="Graeme Smecher", email="gsmecher@t0.technology"},
 ]
+readme='README.rst'
 dependencies = [
   "aiohttp",
   "IPython",
