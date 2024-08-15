@@ -91,6 +91,24 @@ invocation at the expense of language composition (functions, classes,
 modules). IPython is a reasonable compromise - but not when coroutines are
 involved.
 
+Installing
+----------
+
+Something like:
+
+.. code-block:: bash
+
+   $ pip install awaitless
+
+In IPython or JupyterLab, you can now run
+
+.. code-block:: ipython
+
+   In [1]: %load_ext awaitless
+
+You can make this setting persistent by following the instructions `here
+<https://ipython.readthedocs.io/en/stable/config/intro.html>`_.
+
 Testing
 -------
 
