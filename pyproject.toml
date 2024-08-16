@@ -15,6 +15,12 @@ dependencies = [
   "pytest",
 ]
 dynamic = ["version"]
+classifiers = [
+  "Framework :: AsyncIO",
+  "Framework :: IPython",
+  "Framework :: Jupyter :: JupyterLab :: Extensions",
+  "Topic :: Scientific/Engineering",
+]
 
 [project.urls]
 homepage = "https://github.com/gsmecher/awaitless"
