@@ -18,8 +18,8 @@ class CoroutineTransformer(ast.NodeTransformer):
             0,
             ast.Import(
                 names=[
-                    ast.alias(name="inspect", asname=None),
-                    ast.alias(name="asyncio", asname=None),
+                    ast.alias(name="inspect", asname="_awaitless_inspect"),
+                    ast.alias(name="asyncio", asname="_awaitless_asyncio"),
                 ]
             ),
         )
@@ -46,16 +46,16 @@ class CoroutineTransformer(ast.NodeTransformer):
         t = ast.parse(
             textwrap.dedent(
                 """
-                    _ttemp = None
-                    if inspect.iscoroutine(_ttemp):
-                        _ttemp = asyncio.create_task(_ttemp)
-                        await _ttemp
-                    _ttemp
+                    _awaitless_ttemp = None
+                    if _awaitless_inspect.iscoroutine(_awaitless_ttemp):
+                        _awaitless_ttemp = _awaitless_asyncio.create_task(_awaitless_ttemp)
+                        await _awaitless_ttemp
+                    _awaitless_ttemp
                 """
             )
         )
 
-        t.body[0].value = node.value  # assign _ttemp
+        t.body[0].value = node.value  # assign _awaitless_ttemp
 
         return t.body
 
@@ -66,16 +66,16 @@ class CoroutineTransformer(ast.NodeTransformer):
         t = ast.parse(
             textwrap.dedent(
                 """
-                    _ttemp = None
-                    if inspect.iscoroutine(_ttemp):
-                        _ttemp = asyncio.create_task(_ttemp)
-                        await _ttemp
-                    target = _ttemp
+                    _awaitless_ttemp = None
+                    if _awaitless_inspect.iscoroutine(_awaitless_ttemp):
+                        _awaitless_ttemp = _awaitless_asyncio.create_task(_awaitless_ttemp)
+                        await _awaitless_ttemp
+                    target = _awaitless_ttemp
                 """
             )
         )
 
-        t.body[0].value = node.value  # assign _ttemp
+        t.body[0].value = node.value  # assign _awaitless_ttemp
         t.body[-1].targets = node.targets  # assign results
 
         return t.body
