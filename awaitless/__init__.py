@@ -89,6 +89,35 @@ def load_ipython_extension(ipython=None):
         raise RuntimeError("Can't install awaitless: no IPython session exists!")
 
     ipython.ast_transformers.append(CoroutineTransformer())
-    ipython.should_run_async = (
-        lambda *a, **kw: True
-    )  # CoroutineTransformer creates implicit eventloop dependency
+
+    # We've created an implicit eventloop dependency - ensure all cells are
+    # executed in an async context
+    ipython.should_run_async = lambda *a, **kw: True
+
+    # There's a bug in stack_data that's exposed by ipython "ultratb" traceback
+    # code.  Newer ipython has a workaround here:
+    #
+    #     https://github.com/ipython/ipython/pull/14286
+    #
+    # For ipython 8.20 and earlier, we monkey-patch in a backport.
+    if IPython.version_info < (8, 21, 0):
+        from IPython.core import ultratb
+
+        @property
+        def lines(self):
+            from executing.executing import NotOneValueFound
+
+            try:
+                return self._sd.lines
+            except NotOneValueFound:
+
+                class Dummy:
+                    lineno = 0
+                    is_current = False
+
+                    def render(self, *, pygmented):
+                        return "<Error retrieving source code with stack_data see ipython/ipython#13598>"
+
+                return [Dummy()]
+
+        ultratb.FrameInfo.lines = lines
