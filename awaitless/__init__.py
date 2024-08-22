@@ -138,10 +138,9 @@ def load_ipython_extension(ipython=None):
     # very quickly
     for t in ast_transformers:
         if (
-            t.__class__.__module__ == ct.__module__
+            t.__class__.__module__ == ct.__class__.__module__
             and t.__class__.__name__ == ct.__class__.__name__
         ):
-
             ast_transformers.remove(t)
 
     ast_transformers.append(ct)
