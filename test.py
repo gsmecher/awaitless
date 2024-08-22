@@ -102,3 +102,23 @@ def doctest_exception_inside_async_function():
     >>> with pytest.raises(ZeroDivisionError):
     ...     hello()
     """
+
+
+def doctest_lambda():
+    """
+    Lambdas aren't special-cased, but work anyways. It's subtle and worth
+    understanding why (and testing!)
+
+    >>> import asyncio
+    >>> %reload_ext awaitless
+    >>> x = lambda: asyncio.sleep(0)
+    >>> x()
+    Out[1]: <Task finished ... result=None>
+
+    ...wait, what? OK - this worked. That's because the lambda doesn't contain
+    Expr or Statement nodes, and therefore doesn't trigger AST modification
+    that would insert an illegal await.
+
+    The actual conversion from coroutine to task occurred in the last line,
+    which was an Expr.
+    """
