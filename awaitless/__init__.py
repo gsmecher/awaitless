@@ -75,6 +75,17 @@ class CoroutineTransformer(ast.NodeTransformer):
 
         return node
 
+    def visit_ClassDef(self, node):
+        """
+        Inhibit AST transformation inside ClassDef nodes.
+
+        We need to prevent assignments inside class bodies from being
+        transformed, since an "await" there is illegal. (Functions defined in
+        class bodies are already covered.)
+        """
+
+        return node
+
     def visit_Expr(self, node):
         """
         Rewrite Expr nodes

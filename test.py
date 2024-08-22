@@ -122,3 +122,11 @@ def doctest_lambda():
     The actual conversion from coroutine to task occurred in the last line,
     which was an Expr.
     """
+
+
+def doctest_assignment_in_classdef():
+    """
+    >>> %reload_ext awaitless
+    >>> import asyncio
+    >>> class Foo: x = asyncio.sleep(0)
+    """
