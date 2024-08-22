@@ -81,3 +81,24 @@ def doctest_coroutine_inside_async_function():
     >>> await hello_wrapper()
     Out[1]: 'Hello world'
     """
+
+
+def doctest_exception_inside_async_function():
+    """
+    Awaitless makes trouble for ipython stack trace tooling because it alters
+    the AST. This test just raises an exception and ensures it's correctly
+    propagated, which is enough to kick the tires on the tooling but not enough
+    to really tickle the bits that are broken.
+
+    Specifically, ipython's stack trace printer gets angry when we hand it AST
+    entries with lineno attributes beyond the range of the code it's trying to
+    introspect. I could trigger a problem interactively that doesn't seem to
+    work in the doctest framework.
+
+    I'm leaving this test in as a failsafe and/or a reminder.
+    >>> import pytest
+    >>> %reload_ext awaitless
+    >>> async def hello(): raise ZeroDivisionError("Oh no")
+    >>> with pytest.raises(ZeroDivisionError):
+    ...     hello()
+    """
