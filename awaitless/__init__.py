@@ -8,8 +8,27 @@ import textwrap
 import IPython
 
 
+class StacktraceTidyTransformer(ast.NodeTransformer):
+    """
+    Overwrite all source-code metadata in an AST, including children.
+
+    This is a bigger version of ast.copy_location, which modifies only a single
+    node and not its children. We need it to preserve stack-trace data even
+    when we insert new nodes in an AST.
+    """
+
+    def __init__(self, source):
+        self._source = source
+
+    def visit(self, node):
+        return self.generic_visit(ast.copy_location(node, self._source))
+
+
 # Convert coroutines in assignments into tasks
 class CoroutineTransformer(ast.NodeTransformer):
+    """
+    Convert coroutine() objects in Expr and Assignment nodes into Tasks.
+    """
 
     def visit_Module(self, node):
         """
@@ -76,6 +95,7 @@ class CoroutineTransformer(ast.NodeTransformer):
         t.body[0].value = node.value  # assign _awaitless_ttemp
 
         # Replace node and don't generic_visit its children
+        t = StacktraceTidyTransformer(node).visit(t)
         return t.body
 
     def visit_Assign(self, node):
@@ -99,6 +119,7 @@ class CoroutineTransformer(ast.NodeTransformer):
         t.body[-1].targets = node.targets  # assign results
 
         # Replace node and don't generic_visit its children
+        t = StacktraceTidyTransformer(node).visit(t)
         return t.body
 
 
@@ -114,31 +135,3 @@ def load_ipython_extension(ipython=None):
     # We've created an implicit eventloop dependency - ensure all cells are
     # executed in an async context
     ipython.should_run_async = lambda *a, **kw: True
-
-    # There's a bug in stack_data that's exposed by ipython "ultratb" traceback
-    # code.  Newer ipython has a workaround here:
-    #
-    #     https://github.com/ipython/ipython/pull/14286
-    #
-    # For ipython 8.20 and earlier, we monkey-patch in a backport.
-    if IPython.version_info < (8, 21, 0):
-        from IPython.core import ultratb
-
-        @property
-        def lines(self):
-            from executing.executing import NotOneValueFound
-
-            try:
-                return self._sd.lines
-            except NotOneValueFound:
-
-                class Dummy:
-                    lineno = 0
-                    is_current = False
-
-                    def render(self, *, pygmented):
-                        return "<Error retrieving source code with stack_data see ipython/ipython#13598>"
-
-                return [Dummy()]
-
-        ultratb.FrameInfo.lines = lines
