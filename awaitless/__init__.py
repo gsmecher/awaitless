@@ -10,10 +10,12 @@ import IPython
 
 # Convert coroutines in assignments into tasks
 class CoroutineTransformer(ast.NodeTransformer):
-    inner_context = False
 
     def visit_Module(self, node):
-        # import inspect, asyncio
+        """
+        Insert "import" statements that we'll need to use later
+        """
+
         node.body.insert(
             0,
             ast.Import(
@@ -23,25 +25,41 @@ class CoroutineTransformer(ast.NodeTransformer):
                 ]
             ),
         )
-        self.generic_visit(node)
+        return self.generic_visit(node)
+
+    def visit_FunctionDef(self, node):
+        """
+        Inhibit AST transformation when we bump into Function nodes
+
+        This inhibition is mandatory, because our AST modifications insert
+        "await" nodes that are syntactically illegal inside a synchronous
+        function context.
+        """
+
+        # subtree walk is inhibited without generic_visit(node)
         return node
 
-    def _trigger_inner_context(self, node):
-        old_inner_context = self.inner_context
-        self.inner_context = True
-        node = self.generic_visit(node)
-        self.inner_context = old_inner_context
+    def visit_AsyncFunctionDef(self, node):
+        """
+        Inhibit AST transformation inside AsyncFunctionDef nodes.
+
+        This is a judgement call - we need to draw a boundary between "I'm in an
+        interactive shell", where we do AST transformations, and "I'm in a
+        codebase" where we don't.
+
+        Because we are unable to do AST transformations on synchronous
+        functions (see visit_FunctionDef above), and because writing functions
+        seems like a "coding" and not an "interacting" activity, it seems
+        reasonable to draw the boundary at function calls of both synchronous
+        and asynchronous types.
+        """
+
         return node
 
-    # The following AST nodes trigger a shift to an "inner context", where AST
-    # rewriting is disabled.
-    visit_FunctionDef = _trigger_inner_context
-    visit_AsyncFunctionDef = _trigger_inner_context
-
-    # The following AST nodes are rewritten.
     def visit_Expr(self, node):
-        if self.inner_context:
-            return self.generic_visit(node)
+        """
+        Rewrite Expr nodes
+        """
 
         t = ast.parse(
             textwrap.dedent(
@@ -57,11 +75,13 @@ class CoroutineTransformer(ast.NodeTransformer):
 
         t.body[0].value = node.value  # assign _awaitless_ttemp
 
+        # Replace node and don't generic_visit its children
         return t.body
 
     def visit_Assign(self, node):
-        if self.inner_context:
-            return self.generic_visit(node)
+        """
+        Rewrite Assign nodes
+        """
 
         t = ast.parse(
             textwrap.dedent(
@@ -78,6 +98,7 @@ class CoroutineTransformer(ast.NodeTransformer):
         t.body[0].value = node.value  # assign _awaitless_ttemp
         t.body[-1].targets = node.targets  # assign results
 
+        # Replace node and don't generic_visit its children
         return t.body
 
 
