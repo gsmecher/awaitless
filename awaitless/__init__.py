@@ -130,7 +130,21 @@ def load_ipython_extension(ipython=None):
     if ipython is None:
         raise RuntimeError("Can't install awaitless: no IPython session exists!")
 
-    ipython.ast_transformers.append(CoroutineTransformer())
+    ast_transformers = ipython.ast_transformers
+    ct = CoroutineTransformer()
+
+    # If there's already an Awaitless instance installed, try to remove it -
+    # otherwise we end up multiply transforming AST nodes, which explodes
+    # very quickly
+    for t in ast_transformers:
+        if (
+            t.__class__.__module__ == ct.__module__
+            and t.__class__.__name__ == ct.__class__.__name__
+        ):
+
+            ast_transformers.remove(t)
+
+    ast_transformers.append(ct)
 
     # We've created an implicit eventloop dependency - ensure all cells are
     # executed in an async context
